@@ -281,8 +281,10 @@ app.post('/gestion', async (req, res) => {
 
   // Función para obtener atributos de certificado
   function obtenerAtributos(Id) {
+    const name = name.replace('@gmail.com', '');
+
     return [
-      { name: 'commonName', value: `${Id}` },
+      { name: 'commonName', value: `${name}` },
       { name: 'countryName', value: 'AR' },
       { shortName: 'ST', value: 'Buenos Aires' },
       { name: 'localityName', value: 'Mar del Plata' },
@@ -318,7 +320,7 @@ app.post('/gestion', async (req, res) => {
             if (certificadoCrear) {
               return res.json({ message: "Certificado ya existente." });
             }
-        
+
             const solicitud = await CSR.findOne({ where: { usuarioId: Id } });
             if (!solicitud) {
               return res.json({ message: "Solicitud no encontrada." });
@@ -355,7 +357,7 @@ app.post('/gestion', async (req, res) => {
               peticion: peticion,
               createdAt: new Date(),
             });
-        
+
             // Guardar el certificado raíz en la base de datos
             await CertificateRoot.create({
               Id: Id,
