@@ -497,9 +497,10 @@ app.post('/registro', async (req, res) => {
 
       const privateKey = forge.pki.privateKeyFromPem(certificadoRenovar.privateKey);
       const publicKey = forge.pki.publicKeyFromPem(certificadoRenovar.publicKey);
+      const fileName = `cert_${Id.replace(/\s+/g, '').replace('@gmail.com', '').slice(0, 20)}.p12`;
 
       const datos = [
-        { name: 'commonName', value: `${Id}` },
+        { name: 'commonName', value: `${fileName}` },
         { name: 'countryName', value: 'AR' },
         { shortName: 'ST', value: 'Buenos Aires' },
         { name: 'localityName', value: 'Mar del Plata' },
@@ -562,7 +563,7 @@ app.post('/registro', async (req, res) => {
             const pemCert = forge.pki.certificateToPem(cert);
             const pemPrivateKey = forge.pki.privateKeyToPem(privateKey);
 
-            const CA = new certificateAuthority(Id, contraseña, attrs);
+            const CA = new certificateAuthority(fileName, contraseña, attrs);
             const newCertData = CA.updateCertificate(cert, publicKey, privateKey);
 
             await CertificateEmitidos.create({
@@ -605,7 +606,7 @@ app.post('/registro', async (req, res) => {
             const pemCrt = forge.pki.certificateToPem(crt);
             const pemPrivateKey2 = forge.pki.privateKeyToPem(privateKey);
 
-            const CA2 = new certificateAuthority(Id, contraseña, attrs);
+            const CA2 = new certificateAuthority(fileName, contraseña, attrs);
             const newCrtData = CA2.updateCertificate(crt, publicKey, privateKey);
 
             await CertificateEmitidos.create({
@@ -655,7 +656,7 @@ app.post('/registro', async (req, res) => {
             const pemkey = forge.pki.certificateToPem(key);
             const pemKeyPrivateKey = forge.pki.privateKeyToPem(privateKey);
 
-            const CA3 = new certificateAuthority(Id, contraseña, attrs);
+            const CA3 = new certificateAuthority(fileName, contraseña, attrs);
             const newKeyData = CA3.updateCertificate(key, publicKey, privateKey);
 
             await CertificateEmitidos.create({
