@@ -1,5 +1,4 @@
-//Se usara el npm 'Sequelize' para interactuar con la Base de Datos
-const { Sequelize, DataTypes, TEXT } = require('sequelize');
+const { Sequelize, DataTypes } = require('sequelize');
 require('dotenv').config();
 
 const databaseUrl = process.env.DATABASE_URL;
@@ -10,14 +9,15 @@ console.log(databaseUrl);
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',
   dialectOptions: {
-      ssl: {
-          require: true,
-          rejectUnauthorized: false // Cambia esto a true en producción
-      }
+    ssl: {
+      require: true,
+      rejectUnauthorized: false // Cambia esto a true en producción
+    }
   }
 });
 
-// Definición del modelo de ejemplo: Envia los datos del certificado a una tabla MySQL
+// Definición de modelos
+
 const Persona = sequelize.define('Persona', {
   Id: {
     type: DataTypes.CHAR,
@@ -77,11 +77,12 @@ const Administrador = sequelize.define('Administrador', {
 });
 
 const Peticiones = sequelize.define('Peticiones', {
-  usuarioId: {  // Cambiar 'Usuario' a 'usuarioId' para evitar conflictos
+  usuarioId: { 
     type: DataTypes.CHAR,
     allowNull: false,
+    unique: true // Agregado para asegurar que pueda ser referenciado
   },
-  AutorId: {  // Cambiar 'Usuario' a 'usuarioId' para evitar conflictos
+  AutorId: { 
     type: DataTypes.CHAR,
     allowNull: false,
   },
@@ -102,16 +103,15 @@ const Peticiones = sequelize.define('Peticiones', {
     allowNull: false,
   },
 }, {
-  
   timestamps: false,
 });
 
 const CSR = sequelize.define('CSR', {
-  usuarioId: {  // Cambiar 'Usuario' a 'usuarioId' para evitar conflictos
+  usuarioId: { 
     type: DataTypes.CHAR,
     allowNull: false,
   },
-  contraseña: {  // Cambiar 'Usuario' a 'usuarioId' para evitar conflictos
+  contraseña: { 
     type: DataTypes.CHAR,
     allowNull: false,
   },
@@ -135,23 +135,6 @@ const CSR = sequelize.define('CSR', {
   timestamps: false,
 });
 
-// Definir las asociaciones
-Usuario.belongsTo(Persona, {
-  foreignKey: 'Id',
-  targetKey: 'Id',
-});
-
-Administrador.belongsTo(Persona, {
-  foreignKey: 'Id',
-  targetKey: 'Id',
-});
-
-Usuario.hasMany(Peticiones, { foreignKey: 'usuarioId' });
-Peticiones.belongsTo(Usuario, { foreignKey: 'usuarioId', targetKey: 'Id', as: 'usuarioAsociado' });
-
-CSR.belongsTo(Usuario, { foreignKey: 'usuarioId', targetKey: 'Id', as: 'usuarioAsociado' });
-
-// Definición del modelo de ejemplo: Envia los datos del certificado a una tabla MySQL
 const CertificateRoot = sequelize.define('Certificados_Raiz', {
   Id: {
     type: DataTypes.CHAR,
@@ -192,11 +175,6 @@ const CertificateRoot = sequelize.define('Certificados_Raiz', {
   },
 });
 
-CertificateRoot.belongsTo(Peticiones ,{
-  foreignKey: 'Id',
-  targetKey: 'usuarioId',
-});
-
 const CertificateEmitidos = sequelize.define('Certificados_Emitidos', {
   Id_Root: {
     type: DataTypes.CHAR,
@@ -222,13 +200,9 @@ const CertificateEmitidos = sequelize.define('Certificados_Emitidos', {
     type: DataTypes.DATE,
     allowNull: false,
   },
-},{
+}, {
   timestamps: false,
-  primaryKey: false,
 });
-
-CertificateRoot.hasMany(CertificateEmitidos ,{foreignKey: 'Id_Root'});
-CertificateEmitidos.belongsTo(CertificateRoot, { foreignKey:'Id_Root', targetKey: 'Id', as: 'raizAsociada' });
 
 const Repositorio = sequelize.define('Repositorio', {
   Id: {
@@ -239,28 +213,44 @@ const Repositorio = sequelize.define('Repositorio', {
   publicKey: {
     type: DataTypes.TEXT,
     allowNull: false,
-  },  
+  },
   OCSP: {
     type: DataTypes.TEXT,
     defaultValue: false,
   },
-},{
+}, {
   timestamps: false,
 });
 
-Repositorio.belongsTo(CertificateRoot ,{
+// Definir las asociaciones
+
+Usuario.belongsTo(Persona, { foreignKey: 'Id', targetKey: 'Id' });
+Administrador.belongsTo(Persona, { foreignKey: 'Id', targetKey: 'Id' });
+
+Usuario.hasMany(Peticiones, { foreignKey: 'usuarioId' });
+Peticiones.belongsTo(Usuario, { foreignKey: 'usuarioId', targetKey: 'Id', as: 'usuarioAsociado' });
+
+CSR.belongsTo(Usuario, { foreignKey: 'usuarioId', targetKey: 'Id', as: 'usuarioAsociado' });
+
+CertificateRoot.belongsTo(Peticiones, {
   foreignKey: 'Id',
-  targetKey: 'Id',
+  targetKey: 'usuarioId',
 });
 
+CertificateRoot.hasMany(CertificateEmitidos, { foreignKey: 'Id_Root' });
+CertificateEmitidos.belongsTo(CertificateRoot, { foreignKey: 'Id_Root', targetKey: 'Id', as: 'raizAsociada' });
+
+Repositorio.belongsTo(CertificateRoot, { foreignKey: 'Id', targetKey: 'Id' });
+
 // Intentar conectar y sincronizar
+
 const connectAndSync = async () => {
   try {
     await sequelize.authenticate();
     console.log('Connection has been established successfully.');
 
     // Sincronizar modelos
-    await sequelize.sync();
+    await sequelize.sync({ force: true });
     console.log('Models synchronized successfully.');
 
   } catch (error) {
@@ -271,5 +261,5 @@ const connectAndSync = async () => {
 
 connectAndSync();
 
-//Exporta el Certificado hacia app.js como 'Certificate's
+// Exportar modelos
 module.exports = { sequelize, Persona, Usuario, Administrador, Peticiones, CSR, CertificateRoot, CertificateEmitidos, Repositorio };
