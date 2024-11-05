@@ -309,75 +309,77 @@ app.post('/gestion', async (req, res) => {
       let message = '';
 
       switch (peticion) {
-        case 'crear':    
+        case 'crear':
+          try {
             console.log('Procesando petición para crear certificado:', Id);
-
-    // Busca si ya existe el certificado
-    const certificadoCrear = await CertificateRoot.findOne({ where: { Id: Id } });
-    if (certificadoCrear) {
-      return res.json({ message: "Certificado ya existente." });
-    }
-
-    const solicitud = await CSR.findOne({ where: { usuarioId: Id } });
-    if (!solicitud) {
-      return res.json({ message: "Solicitud no encontrada." });
-    }
-
-    const attrs = obtenerAtributos(Id);
-    console.log('Generando certificado con atributos:', attrs);
-
-    // Generar el certificado raíz
-    const CA = new certificateAuthority(Id, Usuario1.contraseña, attrs);
-    const certData = CA.generateRootCertificate();
-
-    if (!certData || !certData.publicKey || !certData.privateKey) {
-      return res.json({ message: "Error al generar certificado raíz." });
-    }
-
-    const issuedAt = new Date();
-    const notAfter = new Date(issuedAt);
-    notAfter.setFullYear(issuedAt.getFullYear() + 1);
-
-    console.log('Certificado generado:', certData);
-
-    // Actualizar solicitud con el estado de aprobación y la clave pública
-    solicitud.publicKey = certData.publicKey;
-    solicitud.estado = 'Aprobado';
-    await solicitud.save();
-
-    // Registrar la petición en la base de datos
-    await Peticiones.create({
-      usuarioId: Id, 
-      AutorId: admin,
-      nombre_Certificado: 'None',
-      publicKey: certData.publicKey,
-      peticion: peticion,
-      createdAt: new Date(),
-    });
-
-    // Guardar el certificado raíz en la base de datos
-    await CertificateRoot.create({
-      Id: Id,
-      firmante: admin,
-      publicKey: certData.publicKey,
-      privateKey: certData.privateKey,
-      contraseña: Usuario1.contraseña,
-      revoked: false,
-      createdAt: issuedAt,
-      updatedAt: issuedAt,
-      IssuedAt: notAfter,
-    });
-
-    // Guardar estado OCSP en el repositorio
-    await Repositorio.create({
-      Id: Id,
-      publicKey: certData.publicKey,
-      OCSP: 'Valido'
-    });
-
-    res.json({ message: "Certificado Creado" });
-          } else {
-            res.json({ message: 'El certificado ya existe.' });
+        
+            // Busca si ya existe el certificado
+            const certificadoCrear = await CertificateRoot.findOne({ where: { Id: Id } });
+            if (certificadoCrear) {
+              return res.json({ message: "Certificado ya existente." });
+            }
+        
+            const solicitud = await CSR.findOne({ where: { usuarioId: Id } });
+            if (!solicitud) {
+              return res.json({ message: "Solicitud no encontrada." });
+            }
+        
+            const attrs = obtenerAtributos(Id);
+            console.log('Generando certificado con atributos:', attrs);
+        
+            // Generar el certificado raíz
+            const CA = new certificateAuthority(Id, Usuario1.contraseña, attrs);
+            const certData = CA.generateRootCertificate();
+        
+            if (!certData || !certData.publicKey || !certData.privateKey) {
+              return res.json({ message: "Error al generar certificado raíz." });
+            }
+        
+            const issuedAt = new Date();
+            const notAfter = new Date(issuedAt);
+            notAfter.setFullYear(issuedAt.getFullYear() + 1);
+        
+            console.log('Certificado generado:', certData);
+        
+            // Actualizar solicitud con el estado de aprobación y la clave pública
+            solicitud.publicKey = certData.publicKey;
+            solicitud.estado = 'Aprobado';
+            await solicitud.save();
+        
+            // Registrar la petición en la base de datos
+            await Peticiones.create({
+              usuarioId: Id, 
+              AutorId: admin,
+              nombre_Certificado: 'None',
+              publicKey: certData.publicKey,
+              peticion: peticion,
+              createdAt: new Date(),
+            });
+        
+            // Guardar el certificado raíz en la base de datos
+            await CertificateRoot.create({
+              Id: Id,
+              firmante: admin,
+              publicKey: certData.publicKey,
+              privateKey: certData.privateKey,
+              contraseña: Usuario1.contraseña,
+              revoked: false,
+              createdAt: issuedAt,
+              updatedAt: issuedAt,
+              IssuedAt: notAfter,
+            });
+        
+            // Guardar estado OCSP en el repositorio
+            await Repositorio.create({
+              Id: Id,
+              publicKey: certData.publicKey,
+              OCSP: 'Valido'
+            });
+        
+            res.json({ message: "Certificado Creado" });
+          } catch (error) {
+            console.error('Error al crear el certificado:', error);
+            res.status(500).json({ message: "Error interno al crear el certificado." });
           }
         break;
 
