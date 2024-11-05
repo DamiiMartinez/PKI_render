@@ -478,12 +478,11 @@ app.post('/gestion', async (req, res) => {
 
 app.post('/registro', async (req, res) => {
   const { peticion, contraseña } = req.body;
-
   const Id = req.session.userId;
 
   try {
       // Verificar si el usuario existe
-      const Usuario1 = await Usuario.findOne({ where: { Id: Id, Contraseña: contraseña } });
+      const Usuario1 = await Usuario.findOne({ where: { Id: Id, contraseña: contraseña } });
 
       if (!Usuario1) {
           console.log('Usuario no encontrado:', Id);
