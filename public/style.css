@@ -1,0 +1,141 @@
+body {
+    background: #1e1e1e;
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+}
+
+a {
+    position: relative;
+    color: #464648;
+    text-decoration: none;
+    padding-left: 25px;
+}
+
+a::before {
+    position: absolute;
+    left: 0;
+    color: #ff9e0d; /* Color de la flecha */
+    font-size: 1.2em;
+    transition: left 0.3s ease;
+}
+
+a:hover, a:focus {
+    color: #ff9e0d; /* Cambia el color del enlace al pasar o seleccionar */
+}
+
+
+h2 {
+    margin: 10px 0;
+    padding-bottom: 10px;
+    color: #464648;
+    border-bottom: 3px solid #464648;
+}
+
+h2:hover{
+    color: #ff9e0d;
+    border-bottom: 3px solid #ff9e0d;
+}
+
+.form {
+    width: 400px;
+    background: #f4f4f4;
+    border-radius: 8px;
+    box-shadow: 0 0 30px -5px #000;
+    margin: calc(20vh - 100px) auto;
+    padding: 20px;
+    max-width: calc(100vw - 40px);
+    box-sizing: border-box;
+    position: relative;
+}
+
+.form{
+    width:400px; 
+
+    height: 500px;
+    background:#e6e6e6;
+    border-radius:8px;
+    box-shadow:0 0 40px -10px #000;
+    margin:calc(25vh - 110px) auto;
+    padding:20px 30px;
+    max-width:calc(100vw - 40px);
+    box-sizing:border-box;
+    font-family:'Montserrat',sans-serif;
+    position:relative;
+}
+
+input{
+    width:100%;
+    padding:10px;
+    box-sizing:border-box;
+    background:none;
+    outline:none;
+    resize:none;
+    border:0;
+    font-family:'Montserrat',sans-serif;
+    transition:all .3s;
+    border-bottom:2px solid #bebed2;
+}
+
+input:focus{
+    border-bottom-color: #ff9e0d;
+    color: #ff9e0d;
+}
+
+select{
+    width:100%;
+    padding:10px;
+    box-sizing:border-box;
+    background:none;
+    outline:none;
+    resize:none;
+    border:0;
+    font-family:'Montserrat',sans-serif;
+    transition:all .3s;
+    border-bottom:2px solid #bebed2;
+}
+
+select:focus{
+    border-bottom:2px solid #78788c;
+}
+
+p:before{
+    content:attr(type);
+    display:block;
+    margin:28px 0 0;
+    font-size:14px;
+    color:#5a5a5a;
+}
+
+button {
+    float: right;
+    padding: 10px 15px;
+    border: 2px solid #464648;
+    background: transparent;
+    color: #464648;
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+    margin-left: 3px;
+}
+
+button:hover {
+    background: #ff9e0d;
+    color: #ffffff;
+}
+
+div{
+    content:'Hi';
+    position:absolute;
+    bottom:-15px;
+    right:-20px;
+    background:#50505a;
+    color:#fff;
+    width:320px;
+    padding:16px 4px 16px 0;
+    border-radius:6px;
+    font-size:13px;
+    box-shadow:10px 10px 40px -14px #000;
+}
+
+span{
+    margin: 0 5px 0 15px;
+}
