@@ -281,7 +281,7 @@ app.post('/gestion', async (req, res) => {
 
   // Función para obtener atributos de certificado
   function obtenerAtributos(Id) {
-    const name = name.replace('@gmail.com', '');
+    const name = Id.replace('@gmail.com', '');
 
     return [
       { name: 'commonName', value: `${name}` },
@@ -616,7 +616,7 @@ app.post('/registro', async (req, res) => {
             });
         
             // Generar y guardar el certificado SSL y su clave
-            const crtFilePath = path.join(__dirname, `cert_${Id}.crt`);
+            const crtFilePath = path.join(__dirname, `cert.crt`);
             const crtFile = fs.writeFileSync(crtFilePath, pemCrt, 'utf8');
 
             // Enviar el archivo PKCS#12 como respuesta
@@ -666,7 +666,7 @@ app.post('/registro', async (req, res) => {
             });
 
             // Generar y guardar el certificado SSL y su clave
-            const keyFilePath = path.join(__dirname, `key_${Id}.key`);
+            const keyFilePath = path.join(__dirname, `clave.key`);
             const keyFile = fs.writeFileSync(keyFilePath, newKeyData.privateKey, 'utf8');
 
             // Enviar el archivo PKCS#12 como respuesta
