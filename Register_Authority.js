@@ -312,7 +312,7 @@ app.post('/gestion', async (req, res) => {
         case 'crear':
           try {
             console.log('Procesando petición para crear certificado:', Id);
-        
+
             // Busca si ya existe el certificado
             const certificadoCrear = await CertificateRoot.findOne({ where: { Id: Id } });
             if (certificadoCrear) {
@@ -338,9 +338,9 @@ app.post('/gestion', async (req, res) => {
             const issuedAt = new Date();
             const notAfter = new Date(issuedAt);
             notAfter.setFullYear(issuedAt.getFullYear() + 1);
-        
+
             console.log('Certificado generado:', certData);
-        
+
             // Actualizar solicitud con el estado de aprobación y la clave pública
             solicitud.publicKey = certData.publicKey;
             solicitud.estado = 'Aprobado';
@@ -390,6 +390,16 @@ app.post('/gestion', async (req, res) => {
           const Estado = await Repositorio.findOne({ where: {Id: Id} });
 
           if (certificadoRenovar) {
+            // Registrar la petición en la base de datos
+            await Peticiones.create({
+              usuarioId: Id, 
+              AutorId: admin,
+              nombre_Certificado: 'None',
+              publicKey: certificadoRenovar.publicKey,
+              peticion: peticion,
+              createdAt: new Date(),
+            });
+
             const privateKey = forge.pki.privateKeyFromPem(certificadoRenovar.privateKey);
             const publicKey = forge.pki.publicKeyFromPem(certificadoRenovar.publicKey);
             const attrs = obtenerAtributos(admin);
@@ -423,6 +433,16 @@ app.post('/gestion', async (req, res) => {
           const OCSP1 = await Repositorio.findOne({ where: { Id: Id } });
 
           if (certificadoRevocar) {
+            // Registrar la petición en la base de datos
+            await Peticiones.create({
+              usuarioId: Id, 
+              AutorId: admin,
+              nombre_Certificado: 'None',
+              publicKey: certificadoRevocar.publicKey,
+              peticion: peticion,
+              createdAt: new Date(),
+            });
+
             // Lógica de revocación aquí
             certificadoRevocar.revoked = true;
             await certificadoRevocar.save();
