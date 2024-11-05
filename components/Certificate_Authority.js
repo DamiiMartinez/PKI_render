@@ -70,7 +70,7 @@ class certificateAuthority {
       const p12Base64 = Buffer.from(p12Der, 'binary').toString('base64');
 
       // Guardar el archivo PKCS#12 en el sistema de archivos
-      const p12Filename = `cert_${Id}.p12`;
+      const p12Filename = `cert.p12`;
       require('fs').writeFileSync(p12Filename, Buffer.from(p12Der, 'binary'));
 
       // Retornar los datos necesarios
@@ -102,7 +102,7 @@ class certificateAuthority {
       const p12Base64 = Buffer.from(p12Der, 'binary').toString('base64');
 
       // Guardar el archivo PKCS#12 en el sistema de archivos
-      const p12Filename = `cert_${Id}.p12`;
+      const p12Filename = `cert.p12`;
       require('fs').writeFileSync(p12Filename, Buffer.from(p12Der, 'binary'));
 
       // Retornar los datos necesarios
