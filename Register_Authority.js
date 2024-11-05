@@ -281,10 +281,10 @@ app.post('/gestion', async (req, res) => {
 
   // Función para obtener atributos de certificado
   function obtenerAtributos(Id) {
-    const name = Id.replace('@gmail.com', '');
+    const fileName = `cert_${Id.replace(/\s+/g, '').replace('@gmail.com', '').slice(0, 20)}.p12`;
 
     return [
-      { name: 'commonName', value: `${name}` },
+      { name: 'commonName', value: `${fileName}` },
       { name: 'countryName', value: 'AR' },
       { shortName: 'ST', value: 'Buenos Aires' },
       { name: 'localityName', value: 'Mar del Plata' },
@@ -329,8 +329,10 @@ app.post('/gestion', async (req, res) => {
             const attrs = obtenerAtributos(Id);
             console.log('Generando certificado con atributos:', attrs);
         
+
             // Generar el certificado raíz
-            const CA = new certificateAuthority(Id, Usuario1.contraseña, attrs);
+            const fileName = `cert_${Id.replace(/\s+/g, '').replace('@gmail.com', '').slice(0, 20)}.p12`;
+            const CA = new certificateAuthority(fileName, Usuario1.contraseña, attrs);
             const certData = CA.generateRootCertificate();
         
             if (!certData || !certData.publicKey || !certData.privateKey) {
