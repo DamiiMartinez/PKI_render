@@ -2,8 +2,12 @@
 const { Sequelize, DataTypes, TEXT } = require('sequelize');
 require('dotenv').config();
 
+const databaseUrl = process.env.DATABASE_URL;
+
+console.log(databaseUrl);
+
 // Configuración de Sequelize
-const sequelize = new Sequelize(process.env.DB_URL, {
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',
   dialectOptions: {
       ssl: {
