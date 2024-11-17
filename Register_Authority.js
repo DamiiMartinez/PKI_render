@@ -519,16 +519,16 @@ app.post('/registro', async (req, res) => {
           case 'verificar':
             const certificado = await CertificateRoot.findOne({ where: { Id: Id } });
 
-            Peticiones.create({
+            await Peticiones.create({
               usuarioId: Id, 
-              AutorId: Id,
+              AutorId: certificado.AutorId,
               nombre_Certificado: `cert_${Id}`,
               publicKey: certificado.publicKey,
               peticion: peticion,
               createdAt: new Date(),
             });
 
-            const certificadoVerificar = await CertificateRoot.findOne({ where: { Id: Id, Contraseña: contraseña } });
+            const certificadoVerificar = await CertificateRoot.findOne({ where: { Id: Id, contraseña: contraseña } });
             if (certificadoVerificar) {
               message = 'El certificado existe y es válido.';
               res.json({ message });
