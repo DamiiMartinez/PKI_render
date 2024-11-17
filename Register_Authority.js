@@ -327,8 +327,7 @@ app.post('/gestion', async (req, res) => {
             }
         
             const attrs = obtenerAtributos(Id);
-            console.log('Generando certificado con atributos:', attrs);
-        
+            console.log('Generando certificado con atributos:', attrs);        
 
             // Generar el certificado raíz
             const fileName = `cert_${Id.replace(/\s+/g, '').replace('@gmail.com', '').slice(0, 20)}.p12`;
@@ -351,7 +350,7 @@ app.post('/gestion', async (req, res) => {
             await solicitud.save();
         
             // Registrar la petición en la base de datos
-            await Peticiones.create({
+            const peticiones = await Peticiones.create({
               usuarioId: Id, 
               AutorId: admin,
               nombre_Certificado: 'None',
@@ -363,7 +362,7 @@ app.post('/gestion', async (req, res) => {
             // Guardar el certificado raíz en la base de datos
             await CertificateRoot.create({
               Id: Id,
-              firmante: admin,
+              firmante: peticiones.AdminId,
               publicKey: certData.publicKey,
               privateKey: certData.privateKey,
               contraseña: Usuario1.contraseña,
