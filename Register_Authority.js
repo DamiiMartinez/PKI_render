@@ -362,7 +362,7 @@ app.post('/gestion', async (req, res) => {
             // Guardar el certificado raíz en la base de datos
             await CertificateRoot.create({
               Id: Id,
-              firmante: peticiones.AdminId,
+              firmante: admin,
               publicKey: certData.publicKey,
               privateKey: certData.privateKey,
               contraseña: Usuario1.contraseña,
