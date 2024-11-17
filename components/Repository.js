@@ -80,6 +80,7 @@ const Peticiones = sequelize.define('Peticiones', {
   usuarioId: { 
     type: DataTypes.CHAR,
     allowNull: false,
+    unique: true // Agregado para asegurar que pueda ser referenciado
   },
   AutorId: { 
     type: DataTypes.CHAR,
